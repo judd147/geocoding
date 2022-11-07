@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Nov  4 11:55:09 2022
+Last Edit 11/7/2022
 Baidu Geocoding V1.0
 @author: zhangliyao
 """
@@ -14,7 +15,7 @@ from GCS_Conversion import gcj2wgs
 def main():
     st.header('Geocoding地理编码工具')
     st.caption('根据地址信息调用百度API反查坐标，需要用户提供开发者密钥，每日每个密钥的请求额度为5000次')
-    data_file = st.file_uploader("上传数据文件", type=['csv','xlsx','xls'], key='data')
+    data_file = st.file_uploader("上传数据文件", type=['csv','xlsx','xls'], help='文件格式要求：第一行为表头信息，excel文件默认读取第一个工作簿', key='data')
     keys_file = st.file_uploader("上传密钥文件", type=['csv','xlsx','xls'], help='文件格式要求：含表头信息，密钥存储在第一列', key='keys')
 
     if data_file and keys_file:
@@ -26,6 +27,7 @@ def main():
                 city = st.text_input('城市名称', help='输入数据所在城市名称，如深圳市')
                 column_duplicate = st.multiselect('选择字段用于数据去重(可多选)', options=frame_list[0].columns, help='请选择根据哪些信息去重，如统一社会信用代码', key='drop_duplicates')
                 column_geocoding = st.selectbox('选择字段用于地理编码', options=frame_list[0].columns, help='请选择根据哪一列信息地理编码，如最新年报地址', key='geocoding')
+                preview = st.checkbox("数据预览", value=False, key='preview_box')
                 run = st.form_submit_button(label='运行')
             
             if run:
@@ -77,11 +79,13 @@ def main():
                     df_result_baidu = to_wgs(frame_list[0])
                 csv = convert_df(df_result_baidu)
                 st.download_button(
-                    label="下载结果文件",
+                    label="下载结果并退出",
                     data=csv,
                     file_name='百度地理编码结果.csv',
                     mime='csv',
                     )
+                if preview:
+                    st.dataframe(df_result_baidu)
                 
 @st.cache()
 def convert_df(df):
