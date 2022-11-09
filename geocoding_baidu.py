@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Nov  4 11:55:09 2022
-Last Edit 11/8/2022
+Last Edit 11/9/2022
 Baidu Geocoding V1.0
 @author: zhangliyao
 """
@@ -10,6 +10,7 @@ import requests
 import numpy as np
 import streamlit as st
 import pandas as pd
+from stqdm import stqdm
 from GCS_Conversion import gcj2wgs
 
 def main():
@@ -56,24 +57,14 @@ def main():
                         key_list.append(key)
                         
                     #循环地理编码
-                    key_index = num_iters = num_errors = num_total = frac_progress = percent_complete = 0
+                    key_index = num_iters = num_errors = 0
                     address_index = frame_list[0].columns.get_loc(column_geocoding)
-                    my_bar = st.progress(0)
-                    frac = int(len(frame_list[0])/100)
-                    for i in range(len(frame_list[0])):
+
+                    for i in stqdm(range(len(frame_list[0]))):
                         if num_iters == 5000:
                             key_index += 1
                             num_iters = 0
-                            st.write('切换key')
-                        if frac_progress == frac:
-                            percent_complete += 1
-                            my_bar.progress(percent_complete)
-                            frac_progress = 0
-                        num_total += 1
-                        if num_total == len(frame_list[0]):
-                            percent_complete += 1
-                            my_bar.progress(percent_complete)
-                        
+                            st.write('已切换key')
                         current_key = key_list[key_index]
                         address = frame_list[0].iloc[i, address_index]
                         try:
@@ -88,7 +79,6 @@ def main():
                         except:
                             num_errors += 1
                         num_iters += 1
-                        frac_progress += 1
                     
                     #转坐标
                     with st.spinner('正在转换坐标...'):
@@ -107,7 +97,6 @@ def main():
                         mime='csv',
                         )
                     
-                
 @st.cache()
 def convert_df(df):
     return df.to_csv(index=False).encode('UTF-8')
