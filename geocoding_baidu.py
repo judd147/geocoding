@@ -14,6 +14,12 @@ from stqdm import stqdm
 from GCS_Conversion import gcj2wgs
 
 def main():
+    st.set_page_config(
+    page_title="Geocoding",
+    page_icon=":round pushpin:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    )
     st.header('Geocoding地理编码工具')
     st.caption('根据地址信息调用百度API反查坐标，需要用户提供开发者密钥，每日每个密钥的请求额度为5000次')
     st.sidebar.title("帮助与反馈")
