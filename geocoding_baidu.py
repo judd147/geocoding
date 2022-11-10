@@ -16,8 +16,7 @@ from GCS_Conversion import gcj2wgs
 def main():
     st.set_page_config(
     page_title="Geocoding",
-    page_icon=":round pushpin:",
-    layout="wide",
+    page_icon="📍",
     initial_sidebar_state="expanded",
     )
     st.header('Geocoding地理编码工具')
